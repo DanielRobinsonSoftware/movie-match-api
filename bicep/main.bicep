@@ -1,5 +1,3 @@
-targetScope = 'subscription'
-
 param resourceGroupName string
 
 // Deploy storage account using module
