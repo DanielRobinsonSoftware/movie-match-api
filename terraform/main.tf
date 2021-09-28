@@ -108,7 +108,7 @@ resource "azurerm_function_app" "fxn" {
 #Create KeyVault ID
 resource "random_id" "key_vault_name" {
   byte_length = 5
-  prefix      = "keyvault"
+  prefix      = "keyvault2"
 }
 
 #Keyvault Creation
@@ -124,22 +124,25 @@ resource "azurerm_key_vault" "keyvault" {
   sku_name = "standard"
 }
 
+resource "azurerm_key_vault_access_policy" "keyvault_access_policy_current" {
+  key_vault_id = azurerm_key_vault.keyvault.id
+  
+  tenant_id = data.azurerm_client_config.current.tenant_id
+  object_id = data.azurerm_client_config.current.object_id
+
+  secret_permissions = [
+    "get", "backup", "delete", "list", "purge", "recover", "restore", "set",
+  ]
+}
+
 resource "azurerm_key_vault_access_policy" "keyvault_access_policy" {
-  key_vault_id         = azurerm_key_vault.keyvault.id
+  key_vault_id = azurerm_key_vault.keyvault.id
   
   tenant_id = data.azurerm_client_config.current.tenant_id
   object_id = azurerm_function_app.fxn.identity.0.principal_id
 
-  key_permissions = [
-    "get",
-  ]
-
   secret_permissions = [
     "get", "list",
-  ]
-
-  storage_permissions = [
-    "get",
   ]
 }
 
