@@ -1,9 +1,7 @@
-param resourceGroupName string
-
 // Deploy storage account using module
 module storage './storage.bicep' = {
   name: 'storageDeployment'
-  scope: resourceGroup(resourceGroupName)
+  scope: resourceGroup()
   params: {
     storageAccountName: 'moviematch20210928'
   }
