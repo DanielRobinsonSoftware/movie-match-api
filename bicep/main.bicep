@@ -1,8 +1,12 @@
-// Deploy storage account using module
-module storage './storage.bicep' = {
-  name: 'storageDeployment'
+param appName string
+
+module functionAppModule './functionApp.bicep' = {
+  name: 'functionAppModule'
   scope: resourceGroup()
   params: {
-    storageAccountName: 'moviematch20210928'
+    storageAccountName: '${substring(appName,0,10)}${uniqueString(resourceGroup().id)}' 
+    appInsightsName: '${appName}${uniqueString(resourceGroup().id)}'
+    hostingPlanName: '${appName}${uniqueString(resourceGroup().id)}'
+    functionAppName: appName
   }
 }
