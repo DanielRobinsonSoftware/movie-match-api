@@ -35,7 +35,10 @@ resource hostingPlan 'Microsoft.Web/serverfarms@2021-01-15' = {
 resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
   name: functionAppName
   location: location
-  kind: 'functionapp'
+  kind: 'functionapp'  
+  identity: {
+    type: 'SystemAssigned'
+  }
   properties: {
     httpsOnly: true
     serverFarmId: hostingPlan.id
@@ -72,3 +75,6 @@ resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
     storageAccount
   ]
 }
+
+output tenantId string = functionApp.identity.tenantId
+output principalId string = functionApp.identity.principalId
