@@ -2,15 +2,15 @@ param appName string
 
 var globallyUniqueName = '${appName}${uniqueString(resourceGroup().id)}'
 
-// Storage account names must be between 3 and 24 characters in length and may contain numbers and lowercase letters only. Storage account name must be unique within Azure.
-var storageAccountName = '${substring(appName,0,10)}${uniqueString(resourceGroup().id)}' 
+// Storage account and keyvault names must be between 3 and 24 characters in length and globally unique
+var shortGloballyUniqueName = '${substring(appName,0,10)}${uniqueString(resourceGroup().id)}' 
 
 
 module functionAppModule 'functionApp.bicep' = {
   name: 'functionAppModule'
   scope: resourceGroup()
   params: {
-    storageAccountName: storageAccountName
+    storageAccountName: shortGloballyUniqueName
     appInsightsName: globallyUniqueName
     hostingPlanName: globallyUniqueName
     functionAppName: appName
@@ -20,7 +20,7 @@ module functionAppModule 'functionApp.bicep' = {
 module keyVaultModule 'keyVault.bicep' = {
   name: 'keyVaultModule'
   params: {
-    keyVaultName: globallyUniqueName
+    keyVaultName: shortGloballyUniqueName
     tenantId: functionAppModule.outputs.tenantId
     principalId: functionAppModule.outputs.principalId
   }
