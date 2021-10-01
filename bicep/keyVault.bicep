@@ -1,6 +1,6 @@
 param keyVaultName string
 param tenantId string
-param principalId string
+param objectId string
 
 var location = resourceGroup().location
 
@@ -11,11 +11,27 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     enabledForDeployment: true
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: true
-    tenantId: tenantId
+    tenantId: subscription().tenantId
     accessPolicies: [
       {
+        tenantId: subscription().tenantId
+        objectId: objectId
+        permissions: {
+          secrets: [
+            'get'
+            'backup'
+            'delete'
+            'list'
+            'purge'
+            'recover'
+            'restore'
+            'set'
+          ]
+        }
+      }
+      {
         tenantId: tenantId
-        objectId: principalId
+        objectId: objectId
         permissions: {
           secrets: [
             'get'
