@@ -22,7 +22,7 @@ module keyVaultModule 'keyVault.bicep' = {
   params: {
     keyVaultName: shortGloballyUniqueName
     tenantId: functionAppModule.outputs.tenantId
-    principalId: functionAppModule.outputs.principalId
+    objectId: functionAppModule.outputs.principalId
   }
   dependsOn:[
     functionAppModule
