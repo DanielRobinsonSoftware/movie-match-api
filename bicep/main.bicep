@@ -1,4 +1,6 @@
 param appName string
+param userObjectId string
+param movieDBAccessToken string
 
 var globallyUniqueName = '${appName}${uniqueString(resourceGroup().id)}'
 
@@ -21,8 +23,10 @@ module keyVaultModule 'keyVault.bicep' = {
   name: 'keyVaultModule'
   params: {
     keyVaultName: shortGloballyUniqueName
-    tenantId: functionAppModule.outputs.tenantId
-    objectId: functionAppModule.outputs.principalId
+    tenantId: subscription().tenantId
+    ownerObjectId: userObjectId
+    targetObjectId: functionAppModule.outputs.principalId
+    movieDBAccessToken: movieDBAccessToken
   }
   dependsOn:[
     functionAppModule

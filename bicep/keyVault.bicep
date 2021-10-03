@@ -1,6 +1,8 @@
 param keyVaultName string
 param tenantId string
-param objectId string
+param ownerObjectId string
+param targetObjectId  string
+param movieDBAccessToken string
 
 var location = resourceGroup().location
 
@@ -11,11 +13,11 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     enabledForDeployment: true
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: true
-    tenantId: subscription().tenantId
+    tenantId: tenantId
     accessPolicies: [
       {
-        tenantId: subscription().tenantId
-        objectId: objectId
+        tenantId: tenantId
+        objectId: ownerObjectId
         permissions: {
           secrets: [
             'get'
@@ -31,7 +33,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
       }
       {
         tenantId: tenantId
-        objectId: objectId
+        objectId: targetObjectId
         permissions: {
           secrets: [
             'get'
@@ -45,4 +47,14 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
       name: 'standard'
     }
   }
+}
+
+resource movieDBAccessTokenSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = {
+  name: '${keyVaultName}/movieDBAccessTokenSecret'
+  properties: {
+    value: movieDBAccessToken
+  }
+  dependsOn: [
+    keyVault
+  ]
 }
