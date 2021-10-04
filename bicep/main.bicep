@@ -32,3 +32,17 @@ module keyVaultModule 'keyVault.bicep' = {
     functionAppModule
   ]
 }
+
+module functionAppSettingsModule 'functionAppSettings.bicep' = {
+  name: 'functionAppSettingsModule'
+  params: {
+    functionAppName: appName
+    storageAccountConnectionString: functionAppModule.outputs.storageAccountConnectionString
+    appInsightsKey: functionAppModule.outputs.appInsightsKey
+    keyVaultUri: keyVaultModule.outputs.keyVaultUri
+  }
+  dependsOn:[
+    functionAppModule
+    keyVaultModule
+  ]
+}
