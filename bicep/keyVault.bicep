@@ -50,7 +50,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
 }
 
 resource movieDBAccessTokenSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = {
-  name: '${keyVaultName}/movieDBAccessTokenSecret'
+  name: '${keyVaultName}/MovieDBAccessToken'
   properties: {
     value: movieDBAccessToken
   }
@@ -58,3 +58,5 @@ resource movieDBAccessTokenSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-
     keyVault
   ]
 }
+
+output keyVaultUri string = keyVault.properties.vaultUri

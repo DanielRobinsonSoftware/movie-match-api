@@ -44,28 +44,7 @@ resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: hostingPlan.id
     clientAffinityEnabled: true
     siteConfig: {
-      appSettings: [
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
-        }
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~3'
-        }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: 'dotnet'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
-        }
-      ]
+
     }
   }
 
@@ -78,3 +57,5 @@ resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
 
 output tenantId string = functionApp.identity.tenantId
 output principalId string = functionApp.identity.principalId
+output storageAccountConnectionString string = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+output appInsightsKey string = appInsights.properties.InstrumentationKey

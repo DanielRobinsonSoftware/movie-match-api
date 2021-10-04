@@ -33,9 +33,8 @@ namespace MovieMatch
             var keyVaultUri = Environment.GetEnvironmentVariable("KeyVaultUri");
             
             var secretClient = new SecretClient(new Uri(keyVaultUri), new DefaultAzureCredential());
-            var secretResponse = await secretClient.GetSecretAsync("movie-db-access-token");            
-
-            string movieDbAccessToken = secretResponse.Value.Value;            
+            var secretResponse = await secretClient.GetSecretAsync("MovieDBAccessToken");
+            string movieDbAccessToken = secretResponse.Value.Value;
 
             // TODO: Web call will go here
             var responseMessage = await Task.Run(() =>
