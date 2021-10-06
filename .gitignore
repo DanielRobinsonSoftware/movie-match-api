@@ -19,6 +19,8 @@
 ### VS Code ###
 **/*.vscode
 
+### Rider ###
+**/.idea/*
 
 # Build results
 **/[Dd]ebug/
