@@ -22,10 +22,9 @@ namespace MovieMatch
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
-            var response = await HttpClient.GetWithHeadersAsync("https://api.themoviedb.org/3/movie/popular", new Dictionary<string, string>()
+            var response = await HttpClient.GetWithHeadersAsync("https://api.themoviedb.org/3/movie/popular", new Dictionary<string, string>
             {
-                ["Authorization"] = $"Bearer {MovieDbAccessToken}",
-                ["Content-Type"] = "application/json;charset=utf-8"
+                ["Authorization"] = $"Bearer {MovieDbAccessToken}"
             });
 
             response.EnsureSuccessStatusCode();
