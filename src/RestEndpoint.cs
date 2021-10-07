@@ -9,15 +9,15 @@ using Microsoft.Extensions.Logging;
 
 namespace MovieMatch
 {
-    public class RestEndpoint : EndpointBase
+    public class MovieEndpoints : EndpointBase
     {
-        public RestEndpoint(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        public MovieEndpoints(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         {
         }
 
-        [FunctionName("RestEndpoint")]
-        public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = null)] HttpRequest req,
+        [FunctionName("v1/movie/popular")]
+        public async Task<IActionResult> Popular(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
