@@ -9,19 +9,17 @@ using Microsoft.Extensions.Logging;
 
 namespace MovieMatch
 {
-    public class MovieEndpoints : EndpointBase
+    public class PopularMovies : EndpointBase
     {
-        public MovieEndpoints(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        public PopularMovies(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
         {
         }
 
-        [FunctionName("v1/movie/popular")]
-        public async Task<IActionResult> Popular(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = null)] HttpRequest req,
+        [FunctionName("PopularMovies")]
+        public async Task<IActionResult> GetPopularMovies(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/movies/popular")] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
-
             var response = await HttpClient.GetWithHeadersAsync("https://api.themoviedb.org/3/movie/popular", new Dictionary<string, string>
             {
                 ["Authorization"] = $"Bearer {MovieDbAccessToken}"
