@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +19,7 @@ namespace MovieMatch
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/movies/popular")] HttpRequest req,
             ILogger log)
         {
-            var response = await HttpClient.GetWithHeadersAsync("https://api.themoviedb.org/3/movie/popular", new Dictionary<string, string>
-            {
-                ["Authorization"] = $"Bearer {MovieDbAccessToken}"
-            });
+            var response = await HttpClient.GetWithAuthHeaderAsync($"{MovieDbBaseUri}/3/movie/popular", MovieDbAccessToken);
 
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
