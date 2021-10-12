@@ -9,6 +9,7 @@ namespace MovieMatch
     {   
         protected readonly HttpClient HttpClient;
         protected readonly string MovieDbAccessToken;
+        protected const string MovieDbBaseUri = "https://api.themoviedb.org";
 
         protected EndpointBase(IHttpClientFactory httpClientFactory)
         {
