@@ -1,11 +1,19 @@
 param appName string
+
+@minLength(3)
+@maxLength(3)
+@description('Must be 3 characters exactly')
+param deploymentEnvironment string
+
 param userObjectId string
 param movieDBAccessToken string
 
-var globallyUniqueName = '${appName}${uniqueString(resourceGroup().id)}'
+var uniqueSuffix = uniqueString(resourceGroup().id)
+var globallyUniqueName = toLower('${appName}${deploymentEnvironment}${uniqueSuffix}')
 
-// Storage account and keyvault names must be between 3 and 24 characters in length and globally unique
-var shortGloballyUniqueName = '${substring(appName,0,10)}${uniqueString(resourceGroup().id)}' 
+// Storage account and keyvault names must be no longer than 24 characters, lowercase and globally unique
+var shortLength = min(length(globallyUniqueName), 24)
+var shortGloballyUniqueName = substring(globallyUniqueName, 0, shortLength)
 
 
 module functionAppModule 'functionApp.bicep' = {
@@ -16,6 +24,7 @@ module functionAppModule 'functionApp.bicep' = {
     appInsightsName: globallyUniqueName
     hostingPlanName: globallyUniqueName
     functionAppName: appName
+    deploymentEnvironment: deploymentEnvironment
   }
 }
 
@@ -27,6 +36,7 @@ module keyVaultModule 'keyVault.bicep' = {
     ownerObjectId: userObjectId
     targetObjectId: functionAppModule.outputs.principalId
     movieDBAccessToken: movieDBAccessToken
+    deploymentEnvironment: deploymentEnvironment
   }
   dependsOn:[
     functionAppModule
