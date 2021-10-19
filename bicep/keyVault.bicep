@@ -3,8 +3,12 @@ param tenantId string
 param ownerObjectId string
 param targetObjectId  string
 param movieDBAccessToken string
+param deploymentEnvironment string
 
 var location = resourceGroup().location
+var tags = {
+  deploymentEnvironment: deploymentEnvironment
+}
 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: keyVaultName
@@ -47,6 +51,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
       name: 'standard'
     }
   }
+  tags: tags
 }
 
 resource movieDBAccessTokenSecret 'Microsoft.KeyVault/vaults/secrets@2021-06-01-preview' = {

@@ -11,6 +11,7 @@ resource functionAppSettings 'Microsoft.Web/sites/config@2021-01-15' = {
     FUNCTIONS_EXTENSION_VERSION: '~3'
     FUNCTIONS_WORKER_RUNTIME: 'dotnet'
     WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
+    WEBSITE_CONTENTSHARE: functionAppName
     KeyVaultUri: keyVaultUri
   }
 }
