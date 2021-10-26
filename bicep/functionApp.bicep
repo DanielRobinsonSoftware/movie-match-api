@@ -2,12 +2,8 @@ param storageAccountName string
 param appInsightsName string
 param hostingPlanName string
 param functionAppName string
-param deploymentEnvironment string
 
 var location = resourceGroup().location
-var tags = {
-  deploymentEnvironment: deploymentEnvironment
-}
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   name: storageAccountName
@@ -16,7 +12,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
     name: 'Standard_LRS'
   }
   kind: 'StorageV2'
-  tags: tags
 }
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -26,7 +21,6 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   properties: {
     Application_Type: 'web'
   }
-  tags: tags
 }
 
 resource hostingPlan 'Microsoft.Web/serverfarms@2021-01-15' = {
@@ -59,8 +53,6 @@ resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
     hostingPlan
     storageAccount
   ]
-
-  tags: tags
 }
 
 output tenantId string = functionApp.identity.tenantId
