@@ -1,17 +1,25 @@
 param functionAppName string
+param functionAppNameStaging string
 param storageAccountConnectionString string
 param appInsightsKey string
 param keyVaultUri string
 
+var settingsProperties = {
+  APPINSIGHTS_INSTRUMENTATIONKEY: appInsightsKey
+  AzureWebJobsStorage: storageAccountConnectionString
+  FUNCTIONS_EXTENSION_VERSION: '~3'
+  FUNCTIONS_WORKER_RUNTIME: 'dotnet'
+  WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
+  WEBSITE_CONTENTSHARE: functionAppName
+  KeyVaultUri: keyVaultUri
+}
+
 resource functionAppSettings 'Microsoft.Web/sites/config@2021-01-15' = {
   name: '${functionAppName}/appsettings'
-  properties: {
-    APPINSIGHTS_INSTRUMENTATIONKEY: appInsightsKey
-    AzureWebJobsStorage: storageAccountConnectionString
-    FUNCTIONS_EXTENSION_VERSION: '~3'
-    FUNCTIONS_WORKER_RUNTIME: 'dotnet'
-    WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
-    WEBSITE_CONTENTSHARE: functionAppName
-    KeyVaultUri: keyVaultUri
-  }
+  properties: settingsProperties
+}
+
+resource functionAppSettingsStaging 'Microsoft.Web/sites/slots/config@2021-02-01' = {
+  name: '${functionAppNameStaging}/appsettings'
+  properties: settingsProperties
 }
