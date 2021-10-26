@@ -8,6 +8,7 @@ var globallyUniqueName = toLower('${appName}${uniqueSuffix}')
 // Storage account and keyvault names must be no longer than 24 characters, lowercase and globally unique
 var shortLength = min(length(globallyUniqueName), 24)
 var shortGloballyUniqueName = substring(globallyUniqueName, 0, shortLength)
+var functionAppNameStaging = '${appName}/staging'
 
 
 module functionAppModule 'functionApp.bicep' = {
@@ -18,6 +19,7 @@ module functionAppModule 'functionApp.bicep' = {
     appInsightsName: globallyUniqueName
     hostingPlanName: globallyUniqueName
     functionAppName: appName
+    functionAppNameStaging: functionAppNameStaging
   }
 }
 
@@ -39,6 +41,7 @@ module functionAppSettingsModule 'functionAppSettings.bicep' = {
   name: 'functionAppSettingsModule'
   params: {
     functionAppName: appName
+    functionAppNameStaging: functionAppNameStaging
     storageAccountConnectionString: functionAppModule.outputs.storageAccountConnectionString
     appInsightsKey: functionAppModule.outputs.appInsightsKey
     keyVaultUri: keyVaultModule.outputs.keyVaultUri
