@@ -29,7 +29,10 @@ module keyVaultModule 'keyVault.bicep' = {
     keyVaultName: shortGloballyUniqueName
     tenantId: subscription().tenantId
     ownerObjectId: userObjectId
-    targetObjectId: functionAppModule.outputs.principalId
+    targetObjectIds: [
+      functionAppModule.outputs.principalId
+      functionAppModule.outputs.stagingPrincipalId
+    ]
     movieDBAccessToken: movieDBAccessToken
   }
   dependsOn:[

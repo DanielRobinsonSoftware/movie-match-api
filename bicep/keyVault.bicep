@@ -1,10 +1,40 @@
 param keyVaultName string
 param tenantId string
 param ownerObjectId string
-param targetObjectId  string
+param targetObjectIds array
 param movieDBAccessToken string
 
 var location = resourceGroup().location
+
+var accessPolicyOwner = {
+  tenantId: tenantId
+  objectId: ownerObjectId
+  permissions: {
+    secrets: [
+      'get'
+      'backup'
+      'delete'
+      'list'
+      'purge'
+      'recover'
+      'restore'
+      'set'
+    ]
+  }
+}
+
+var accessPolicyTargetObjects = [for objectId in targetObjectIds: {
+  tenantId: tenantId
+  objectId: objectId
+  permissions: {
+    secrets: [
+      'get'
+      'list'
+    ]
+  }
+}]
+
+var accessPolicies = concat(array(accessPolicyOwner), accessPolicyTargetObjects)
 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: keyVaultName
@@ -14,34 +44,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
     enabledForTemplateDeployment: true
     enabledForDiskEncryption: true
     tenantId: tenantId
-    accessPolicies: [
-      {
-        tenantId: tenantId
-        objectId: ownerObjectId
-        permissions: {
-          secrets: [
-            'get'
-            'backup'
-            'delete'
-            'list'
-            'purge'
-            'recover'
-            'restore'
-            'set'
-          ]
-        }
-      }
-      {
-        tenantId: tenantId
-        objectId: targetObjectId
-        permissions: {
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
+    accessPolicies: accessPolicies
     sku: {
       family: 'A'
       name: 'standard'
