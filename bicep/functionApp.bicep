@@ -27,16 +27,20 @@ resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
 resource hostingPlan 'Microsoft.Web/serverfarms@2021-01-15' = {
   name: hostingPlanName
   location: location
+  kind: 'linux'
   sku: {
     name: 'Y1' 
     tier: 'Dynamic'
+  }
+  properties:{
+    reserved: true
   }
 }
 
 resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
   name: functionAppName
   location: location
-  kind: 'functionapp'
+  kind: 'functionapp,linux'
   identity: {
     type: 'SystemAssigned'
   }
@@ -59,7 +63,7 @@ resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
 resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2021-02-01' = {
   name: functionAppNameStaging
   location: location
-  kind: 'functionapp'
+  kind: 'functionapp,linux'
   identity: {
     type: 'SystemAssigned'
   }
