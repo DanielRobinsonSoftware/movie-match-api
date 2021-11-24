@@ -10,8 +10,12 @@
 
 ## 🤔 What is this?
 An API to support upcoming Movie Match applications
+- C# function app
+- Retrieves data from themoviedb.org
+- Hosted in Azure, deployed with Bicep IaC
+- CI/CD with GitHub actions
 
-## 🤷🏼‍♂️ Motivation
+## 🤷 Motivation
 - Non-profit, for fun
 - Solo project, portfolio
 - Practical learning exercise
