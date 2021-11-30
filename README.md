@@ -15,11 +15,9 @@ An API to support upcoming Movie Match applications
 - Hosted in Azure, deployed with Bicep IaC
 - CI/CD with GitHub actions
 
-## 🤷 Motivation
-- Non-profit, for fun
-- Solo project, portfolio
-- Practical learning exercise
-
 ## 📝 Project
 - [Impact Map](https://github.com/DanielRobinsonSoftware?tab=projects)
 - [Kanban board](https://github.com/users/DanielRobinsonSoftware/projects/1)
+
+## 🤷 Motivation
+This is a non-profit, solo project for fun and practice.
