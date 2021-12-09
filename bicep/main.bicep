@@ -48,6 +48,7 @@ module functionAppSettingsModule 'functionAppSettings.bicep' = {
     storageAccountConnectionString: functionAppModule.outputs.storageAccountConnectionString
     appInsightsKey: functionAppModule.outputs.appInsightsKey
     keyVaultUri: keyVaultModule.outputs.keyVaultUri
+    clientId: appName
   }
   dependsOn:[
     functionAppModule

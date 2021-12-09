@@ -3,6 +3,7 @@ param functionAppNameStaging string
 param storageAccountConnectionString string
 param appInsightsKey string
 param keyVaultUri string
+param clientId string
 
 var settingsProperties = {
   APPINSIGHTS_INSTRUMENTATIONKEY: appInsightsKey
@@ -12,6 +13,31 @@ var settingsProperties = {
   WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
   WEBSITE_CONTENTSHARE: functionAppName
   KeyVaultUri: keyVaultUri
+  globalValidation: {
+    requireAuthentication: true
+    unauthenticatedClientAction: 'Return403'
+  }
+  identityProviders: {
+    azureActiveDirectory: {
+      enabled: true
+      registration: {
+        openIdIssuer: 'https://login.microsoftonline.com/${subscription().tenantId}/v2.0'
+        clientId: clientId
+        clientSecretSettingName: 'AD_IDENTITY_CLIENT_SECRET'
+      }
+      validation: {
+        allowedAudiences: [
+            'api://${clientId}'
+        ]
+      }
+      isAutoProvisioned: false
+    }
+    login: {
+      tokenStore: {
+        enabled: true
+      }
+    }
+  }
 }
 
 resource functionAppSettings 'Microsoft.Web/sites/config@2021-01-15' = {
