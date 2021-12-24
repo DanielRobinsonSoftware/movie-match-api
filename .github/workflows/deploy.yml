@@ -30,7 +30,7 @@ jobs:
           resourceGroupName: ${{ secrets.AZURE_RG }}
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           template: ./bicep/main.bicep
-          parameters: appName=${{ env.AZURE_FUNCTIONAPP_NAME}} userObjectId=${{ secrets.AZURE_USER_OBJECT_ID }} movieDBAccessToken=${{ secrets.MOVIE_DB_ACCESS_TOKEN }}
+          parameters: appName=${{ env.AZURE_FUNCTIONAPP_NAME}} userObjectId=${{ secrets.AZURE_USER_OBJECT_ID }} movieDBAccessToken=${{ secrets.MOVIE_DB_ACCESS_TOKEN }} identityInstance=https://login.microsoftonline.com/
 
       - name: Setup DotNet ${{ env.DOTNET_SDK_VERSION }} Environment
         uses: actions/setup-dotnet@v1
@@ -54,6 +54,12 @@ jobs:
 
       - name: Run e2e tests against staging
         shell: bash
+        env:
+          API_APP_NAME: ${{ env.AZURE_FUNCTIONAPP_NAME }}
+          WEB_APP_CLIENT_ID: ${{ secrets.WEB_APP_CLIENT_ID }}
+          API_SCOPE: ${{ secrets.API_SCOPE }}
+          WEB_APP_CLIENT_SECRET: $ {{ secrets.WEB_APP_CLIENT_SECRET }}
+
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_TEST_PATH }}/e2e'
           dotnet test

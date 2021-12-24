@@ -3,6 +3,9 @@ param functionAppNameStaging string
 param storageAccountConnectionString string
 param appInsightsKey string
 param keyVaultUri string
+param identityTenantId string
+param identityClientId string
+param identityInstance string
 
 var settingsProperties = {
   APPINSIGHTS_INSTRUMENTATIONKEY: appInsightsKey
@@ -12,6 +15,11 @@ var settingsProperties = {
   WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: storageAccountConnectionString
   WEBSITE_CONTENTSHARE: functionAppName
   KeyVaultUri: keyVaultUri
+  AzureAD: {
+    TenantId: identityTenantId
+    ClientId: identityClientId
+    Instance: identityInstance
+  }
 }
 
 resource functionAppSettings 'Microsoft.Web/sites/config@2021-01-15' = {

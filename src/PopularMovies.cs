@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace MovieMatch
 {
@@ -19,6 +20,13 @@ namespace MovieMatch
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/movies/popular")] HttpRequest req,
             ILogger log)
         {
+            // TODO: Refactor for reuse
+            ClaimsPrincipal principal;
+            if ((principal = await _azureADJwtBearerValidation.ValidateTokenAsync(req.Headers["Authorization"])) == null)
+            {
+                return new UnauthorizedResult();
+            }
+
             var response = await HttpClient.GetWithAuthHeaderAsync($"{MovieDbBaseUri}/3/movie/popular", MovieDbAccessToken);
 
             response.EnsureSuccessStatusCode();

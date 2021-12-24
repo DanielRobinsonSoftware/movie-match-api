@@ -2,6 +2,7 @@ using System.Net.Http;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 using System;
+using MovieMatch.Identity;
 
 namespace MovieMatch
 {
@@ -10,6 +11,7 @@ namespace MovieMatch
         protected readonly HttpClient HttpClient;
         protected readonly string MovieDbAccessToken;
         protected const string MovieDbBaseUri = "https://api.themoviedb.org";
+        protected readonly AzureADJwtBearerValidation _azureADJwtBearerValidation;
 
         protected EndpointBase(IHttpClientFactory httpClientFactory)
         {
