@@ -1,4 +1,6 @@
-namespace Test
+using Newtonsoft.Json;
+
+namespace e2e
 {
     public class TokenResponse
     {

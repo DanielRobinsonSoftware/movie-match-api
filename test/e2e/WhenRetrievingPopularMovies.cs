@@ -4,7 +4,7 @@ using RestSharp;
 using FluentAssertions;
 using Newtonsoft.Json;
 
-namespace Test.E2E
+namespace e2e
 {
     public class WhenRetrievingPopularMovies
     {
@@ -15,17 +15,19 @@ namespace Test.E2E
         {
             var apiAppName = Environment.GetEnvironmentVariable("API_APP_NAME");
             _apiClient = new RestClient($"https://{apiAppName}-staging.azurewebsites.net/api/v1/");
+
             GivenIHaveAuthenticated();
         }
 
-        public void GivenIHaveAuthenticated()
+        private void GivenIHaveAuthenticated()
         {
             // https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow
-            
-            var tokenClient = new RestClient($"https://login.microsoftonline.com/{tenantId}/oauth2/v2.0/token");
+            var instance = Environment.GetEnvironmentVariable("AZURE_AD_INSTANCE");
+            var tenantId = Environment.GetEnvironmentVariable("AZURE_AD_TENANT_ID");
+            var tokenClient = new RestClient($"{instance}{tenantId}/oauth2/v2.0/token");
             var request = new RestRequest();
             
-            //request.AddHeader("content-type", "application/x-www-form-urlencoded"); <-- TODO: Delete if not required
+            //request.AddHeader("content-type", "application/x-www-form-urlencoded"); //<-- TODO: Delete if not required
             request.AddParameter("client_id", Environment.GetEnvironmentVariable("WEB_APP_CLIENT_ID")); // The web app's application ID.
             request.AddParameter("scope", Environment.GetEnvironmentVariable("API_SCOPE")); // The resource identifier (application ID URI) of the resource you want, affixed with the .default suffix. 
             request.AddParameter("client_secret", Environment.GetEnvironmentVariable("WEB_APP_CLIENT_SECRET")); // The client secret generated for the app in the app registration portal.
