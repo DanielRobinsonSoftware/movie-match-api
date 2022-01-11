@@ -4,7 +4,7 @@ using RestSharp;
 using FluentAssertions;
 using Newtonsoft.Json;
 
-namespace e2e
+namespace Test.E2E
 {
     public class WhenRetrievingPopularMovies
     {

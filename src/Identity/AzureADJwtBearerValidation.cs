@@ -32,9 +32,9 @@ namespace MovieMatch.Identity
             _configuration = configuration;
             _log = loggerFactory.CreateLogger<AzureADJwtBearerValidation>();
  
-            _tenantId = _configuration["AzureAD:TenantId"];
-            _audience = _configuration["AzureAD:ClientId"];
-            _instance = _configuration["AzureAD:Instance"];
+            _tenantId = _configuration["AzureADTenantId"];
+            _audience = _configuration["AzureADClientId"];
+            _instance = _configuration["AzureADInstance"];
             _wellKnownEndpoint = $"{_instance}{_tenantId}/v2.0/.well-known/openid-configuration";
         }
  

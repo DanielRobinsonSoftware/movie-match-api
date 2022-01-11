@@ -11,17 +11,26 @@ var shortLength = min(length(globallyUniqueName), 24)
 var shortGloballyUniqueName = substring(globallyUniqueName, 0, shortLength)
 var functionAppNameStaging = '${appName}/staging'
 
+module storageAccountModule 'storageAccount.bicep' = {
+  name: 'storageAccountModule'
+  scope: resourceGroup()
+  params: {
+    storageAccountName: shortGloballyUniqueName
+  }
+}
 
 module functionAppModule 'functionApp.bicep' = {
   name: 'functionAppModule'
   scope: resourceGroup()
-  params: {
-    storageAccountName: shortGloballyUniqueName
+  params: {    
     appInsightsName: globallyUniqueName
     hostingPlanName: globallyUniqueName
     functionAppName: appName
     functionAppNameStaging: functionAppNameStaging
   }
+  dependsOn:[
+    storageAccountModule
+  ]
 }
 
 module keyVaultModule 'keyVault.bicep' = {
@@ -46,15 +55,18 @@ module functionAppSettingsModule 'functionAppSettings.bicep' = {
   params: {
     functionAppName: appName
     functionAppNameStaging: functionAppNameStaging
-    storageAccountConnectionString: functionAppModule.outputs.storageAccountConnectionString
     appInsightsKey: functionAppModule.outputs.appInsightsKey
     keyVaultUri: keyVaultModule.outputs.keyVaultUri
     identityTenantId: subscription().tenantId
     identityClientId: subscription().subscriptionId
     identityInstance: identityInstance
+    storageAccountName: shortGloballyUniqueName
+    storageAccountId: storageAccountModule.outputs.storageAccountId
+    storageAccountApiVersion: storageAccountModule.outputs.storageAccountApiVersion
   }
   dependsOn:[
     functionAppModule
     keyVaultModule
+    storageAccountModule
   ]
 }
