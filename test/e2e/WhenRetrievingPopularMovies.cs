@@ -27,7 +27,6 @@ namespace e2e
             var tokenClient = new RestClient($"{instance}{tenantId}/oauth2/v2.0/token");
             var request = new RestRequest();
             
-            //request.AddHeader("content-type", "application/x-www-form-urlencoded"); //<-- TODO: Delete if not required
             request.AddParameter("client_id", Environment.GetEnvironmentVariable("WEB_APP_CLIENT_ID")); // The web app's application ID.
             request.AddParameter("scope", Environment.GetEnvironmentVariable("API_SCOPE")); // The resource identifier (application ID URI) of the resource you want, affixed with the .default suffix. 
             request.AddParameter("client_secret", Environment.GetEnvironmentVariable("WEB_APP_CLIENT_SECRET")); // The client secret generated for the app in the app registration portal.
