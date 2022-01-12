@@ -6,12 +6,14 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using MovieMatch.Identity;
 
 namespace MovieMatch
 {
     public class PopularMovies : EndpointBase
     {
-        public PopularMovies(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        public PopularMovies(IHttpClientFactory httpClientFactory, AzureADJwtBearerValidation azureADJwtBearerValidation) 
+            : base(httpClientFactory, azureADJwtBearerValidation)
         {
         }
 
@@ -21,8 +23,8 @@ namespace MovieMatch
             ILogger log)
         {
             // TODO: Refactor for reuse
-            ClaimsPrincipal principal;
-            if ((principal = await _azureADJwtBearerValidation.ValidateTokenAsync(req.Headers["Authorization"])) == null)
+            ClaimsPrincipal principal = await AzureADJwtBearerValidation.ValidateTokenAsync(req.Headers["Authorization"]);
+            if (principal == null)
             {
                 return new UnauthorizedResult();
             }
