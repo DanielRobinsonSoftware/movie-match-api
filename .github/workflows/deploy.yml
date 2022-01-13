@@ -31,7 +31,7 @@ jobs:
           resourceGroupName: ${{ secrets.AZURE_RG }}
           subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           template: ./bicep/main.bicep
-          parameters: appName=${{ env.AZURE_FUNCTIONAPP_NAME}} userObjectId=${{ secrets.AZURE_USER_OBJECT_ID }} movieDBAccessToken=${{ secrets.MOVIE_DB_ACCESS_TOKEN }} identityInstance=${{ env.AZURE_AD_INSTANCE }}
+          parameters: appName=${{ env.AZURE_FUNCTIONAPP_NAME}} userObjectId=${{ secrets.AZURE_USER_OBJECT_ID }} movieDBAccessToken=${{ secrets.MOVIE_DB_ACCESS_TOKEN }} identityInstance=${{ env.AZURE_AD_INSTANCE }} apiApplicationIdUri=${{ secrets.API_APPLICATION_ID_URI }}
 
       - name: Setup DotNet ${{ env.DOTNET_SDK_VERSION }} Environment
         uses: actions/setup-dotnet@v1
