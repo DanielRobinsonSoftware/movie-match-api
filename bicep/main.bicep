@@ -7,7 +7,7 @@ param movieDBAccessToken string
 @secure()
 param identityInstance string
 @secure()
-param apiApplicationIdUri string
+param apiApplicationId string
 
 var uniqueSuffix = uniqueString(resourceGroup().id)
 var globallyUniqueName = toLower('${appName}${uniqueSuffix}')
@@ -66,7 +66,7 @@ module functionAppSettingsModule 'functionAppSettings.bicep' = {
     identityTenantId: subscription().tenantId
     identityClientId: subscription().subscriptionId
     identityInstance: identityInstance
-    apiApplicationIdUri: apiApplicationIdUri
+    apiApplicationId: apiApplicationId
     storageAccountName: shortGloballyUniqueName
     storageAccountId: storageAccountModule.outputs.storageAccountId
     storageAccountApiVersion: storageAccountModule.outputs.storageAccountApiVersion

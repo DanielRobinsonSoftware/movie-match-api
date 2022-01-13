@@ -12,7 +12,7 @@ param identityClientId string
 @secure()
 param identityInstance string
 @secure()
-param apiApplicationIdUri string
+param apiApplicationId string
 
 param storageAccountName string
 param storageAccountId string
@@ -31,7 +31,7 @@ var settingsProperties = {
   AzureADTenantId: identityTenantId
   AzureADClientId: identityClientId
   AzureADInstance: identityInstance
-  ApiApplicationIdUri: apiApplicationIdUri
+  ApiApplicationId: apiApplicationId
 }
 
 resource functionAppSettings 'Microsoft.Web/sites/config@2021-01-15' = {
