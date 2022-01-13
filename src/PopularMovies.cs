@@ -23,9 +23,11 @@ namespace MovieMatch
             ILogger log)
         {
             // TODO: Refactor for reuse
-            ClaimsPrincipal principal = await AzureADJwtBearerValidation.ValidateTokenAsync(req.Headers["Authorization"]);
+            var authorizationHeader = req.Headers["Authorization"];
+            ClaimsPrincipal principal = await AzureADJwtBearerValidation.ValidateTokenAsync(authorizationHeader);
             if (principal == null)
             {
+                log.LogTrace($"Returning UnauthorizedResult for {authorizationHeader}");
                 return new UnauthorizedResult();
             }
 
