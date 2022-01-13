@@ -1,5 +1,6 @@
 using System;
 using Xunit;
+using Xunit.Abstractions;
 using RestSharp;
 using FluentAssertions;
 using Newtonsoft.Json;
@@ -8,11 +9,14 @@ namespace e2e
 {
     public class WhenRetrievingPopularMovies
     {
-        RestClient _apiClient;
-        string _bearerToken;
+        private RestClient _apiClient;
+        private string _bearerToken;
+        private readonly ITestOutputHelper _output;
 
-        public WhenRetrievingPopularMovies()
+        public WhenRetrievingPopularMovies(ITestOutputHelper output)
         {
+            _output = output;
+
             var apiAppName = Environment.GetEnvironmentVariable("API_APP_NAME");
             _apiClient = new RestClient($"https://{apiAppName}-staging.azurewebsites.net/api/v1/");
 
@@ -48,9 +52,12 @@ namespace e2e
             var request = new RestRequest("movies/popular");
             request.AddHeader("Authorization", $"Bearer {_bearerToken}");
 
+            // Act
             var response = _apiClient.Get(request);
 
-            response.IsSuccessful.Should().BeTrue();
+            // Assert
+            _output.WriteLine($"Reponse status is: {response.StatusCode.ToString()} {response.StatusDescription}");
+            response.IsSuccessful.Should().BeTrue();            
         }
 
         // TODO: Tests to validate the expected structure of the response content
