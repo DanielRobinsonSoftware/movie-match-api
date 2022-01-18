@@ -24,8 +24,8 @@ namespace MovieMatch
         {
             // TODO: Refactor for reuse
             var authorizationHeader = req.Headers["Authorization"];
-            ClaimsPrincipal principal = await AzureADJwtBearerValidation.ValidateTokenAsync(authorizationHeader);
-            if (principal == null)
+            var validToken = await AzureADJwtBearerValidation.ValidateTokenAsync(authorizationHeader);
+            if (!validToken)
             {
                 log.LogTrace($"Returning UnauthorizedResult for {authorizationHeader}");
                 return new UnauthorizedResult();

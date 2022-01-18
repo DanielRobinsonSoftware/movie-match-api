@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MovieMatch.Identity
 {
-    // Credit to Damien Bod
+    // Based on Damien Bod's example
     // https://damienbod.com/2020/09/24/securing-azure-functions-using-azure-ad-jwt-bearer-token-authentication-for-user-access-tokens/
     public class AzureADJwtBearerValidation
     {
@@ -25,7 +25,6 @@ namespace MovieMatch.Identity
         private string _tenantId = string.Empty;
         private string _audience = string.Empty;
         private string _instance = string.Empty;
-        private string _requiredScope = "openid";
  
         public AzureADJwtBearerValidation(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
@@ -38,16 +37,16 @@ namespace MovieMatch.Identity
             _wellKnownEndpoint = $"{_instance}{_tenantId}/v2.0/.well-known/openid-configuration";
         }
  
-        public async Task<ClaimsPrincipal> ValidateTokenAsync(string authorizationHeader)
+        public async Task<bool> ValidateTokenAsync(string authorizationHeader)
         {
             if (string.IsNullOrEmpty(authorizationHeader))
             {
-                return null;
+                return false;
             }
  
             if (!authorizationHeader.Contains("Bearer"))
             {
-                return null;
+                return false;
             }
  
             var accessToken = authorizationHeader.Substring("Bearer ".Length);
@@ -70,21 +69,16 @@ namespace MovieMatch.Identity
  
             try
             {
-                SecurityToken securityToken;
-                _claimsPrincipal = tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
- 
-                if (IsScopeValid(_requiredScope))
-                {
-                    return _claimsPrincipal;
-                }
- 
-                return null;
+                SecurityToken securityToken;                
+                tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
+
+                return true;
             }
             catch (Exception ex)
             {
                 _log.LogError(ex.ToString());
             }
-            return null;
+            return false;
         }
  
         public string GetPreferredUserName()
@@ -106,34 +100,6 @@ namespace MovieMatch.Identity
                  _wellKnownEndpoint, new OpenIdConnectConfigurationRetriever());
  
             return await _configurationManager.GetConfigurationAsync();
-        }
- 
-        private bool IsScopeValid(string scopeName)
-        {
-            if (_claimsPrincipal == null)
-            {
-                _log.LogWarning($"Scope invalid {scopeName}");
-                return false;
-            }
- 
-            var scopeClaim = _claimsPrincipal.HasClaim(x => x.Type == scopeType)
-                ? _claimsPrincipal.Claims.First(x => x.Type == scopeType).Value
-                : string.Empty;
- 
-            if (string.IsNullOrEmpty(scopeClaim))
-            {
-                _log.LogWarning($"Scope invalid {scopeName}");
-                return false;
-            }
- 
-            if (!scopeClaim.Equals(scopeName, StringComparison.OrdinalIgnoreCase))
-            {
-                _log.LogWarning($"Scope invalid {scopeName}");
-                return false;
-            }
- 
-            _log.LogDebug($"Scope valid {scopeName}");
-            return true;
         }
     }
 }
