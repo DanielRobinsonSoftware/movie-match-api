@@ -25,7 +25,7 @@ namespace MovieMatch.Identity
         private string _tenantId = string.Empty;
         private string _audience = string.Empty;
         private string _instance = string.Empty;
-        private string _requiredScope = "access_as_user";
+        private string _requiredScope = "openid";
  
         public AzureADJwtBearerValidation(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
