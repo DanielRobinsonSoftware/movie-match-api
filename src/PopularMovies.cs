@@ -27,7 +27,6 @@ namespace MovieMatch
             var validToken = await AzureADJwtBearerValidation.ValidateTokenAsync(authorizationHeader);
             if (!validToken)
             {
-                log.LogTrace($"Returning UnauthorizedResult for {authorizationHeader}");
                 return new UnauthorizedResult();
             }
 
