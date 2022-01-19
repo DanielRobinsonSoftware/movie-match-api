@@ -1,7 +1,5 @@
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -11,41 +9,37 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace MovieMatch.Identity
 {
-    // Based on Damien Bod's example
-    // https://damienbod.com/2020/09/24/securing-azure-functions-using-azure-ad-jwt-bearer-token-authentication-for-user-access-tokens/
     public class AzureADJwtBearerValidation
     {
         private IConfiguration _configuration;
         private ILogger _log;
-        private const string scopeType = @"http://schemas.microsoft.com/identity/claims/scope";
         private ConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
-        private ClaimsPrincipal _claimsPrincipal;
  
-        private string _wellKnownEndpoint = string.Empty;
-        private string _tenantId = string.Empty;
-        private string _audience = string.Empty;
-        private string _instance = string.Empty;
+        private string _wellKnownEndpoint;
+        private string _audience;
  
         public AzureADJwtBearerValidation(IConfiguration configuration, ILoggerFactory loggerFactory)
         {
             _configuration = configuration;
             _log = loggerFactory.CreateLogger<AzureADJwtBearerValidation>();
  
-            _tenantId = _configuration["AzureADTenantId"];
+            var instance = _configuration["AzureADInstance"];
+            var tenantId = _configuration["AzureADTenantId"];
+            _wellKnownEndpoint = $"{instance}{tenantId}/v2.0/.well-known/openid-configuration";
             _audience = _configuration["ApiApplicationId"];
-            _instance = _configuration["AzureADInstance"];
-            _wellKnownEndpoint = $"{_instance}{_tenantId}/v2.0/.well-known/openid-configuration";
         }
  
         public async Task<bool> ValidateTokenAsync(string authorizationHeader)
         {
             if (string.IsNullOrEmpty(authorizationHeader))
             {
+                _log.LogDebug("Token validation failed due to missing authorization header");
                 return false;
             }
  
             if (!authorizationHeader.Contains("Bearer"))
             {
+                _log.LogDebug("Token validation failed due to missing Bearer token");
                 return false;
             }
  
@@ -76,26 +70,13 @@ namespace MovieMatch.Identity
             }
             catch (Exception ex)
             {
-                _log.LogError(ex.ToString());
+                _log.LogDebug($"Token validation failed due to {ex.ToString()}");
             }
             return false;
         }
  
-        public string GetPreferredUserName()
-        {
-            string preferredUsername = string.Empty;
-            var preferred_username = _claimsPrincipal.Claims.FirstOrDefault(t => t.Type == "preferred_username");
-            if (preferred_username != null)
-            {
-                preferredUsername = preferred_username.Value;
-            }
- 
-            return preferredUsername;
-        }
- 
         private async Task<OpenIdConnectConfiguration> GetOIDCWellknownConfiguration()
         {
-            _log.LogDebug($"Get OIDC well known endpoints {_wellKnownEndpoint}");
             _configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
                  _wellKnownEndpoint, new OpenIdConnectConfigurationRetriever());
  
