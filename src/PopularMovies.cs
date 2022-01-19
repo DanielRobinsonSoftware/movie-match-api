@@ -5,12 +5,15 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
+using MovieMatch.Identity;
 
 namespace MovieMatch
 {
     public class PopularMovies : EndpointBase
     {
-        public PopularMovies(IHttpClientFactory httpClientFactory) : base(httpClientFactory)
+        public PopularMovies(IHttpClientFactory httpClientFactory, AzureADJwtBearerValidation azureADJwtBearerValidation) 
+            : base(httpClientFactory, azureADJwtBearerValidation)
         {
         }
 
@@ -19,6 +22,14 @@ namespace MovieMatch
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/movies/popular")] HttpRequest req,
             ILogger log)
         {
+            // TODO: Refactor for reuse
+            var authorizationHeader = req.Headers["Authorization"];
+            var validToken = await AzureADJwtBearerValidation.ValidateTokenAsync(authorizationHeader);
+            if (!validToken)
+            {
+                return new UnauthorizedResult();
+            }
+
             var response = await HttpClient.GetWithAuthHeaderAsync($"{MovieDbBaseUri}/3/movie/popular", MovieDbAccessToken);
 
             response.EnsureSuccessStatusCode();

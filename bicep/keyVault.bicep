@@ -2,6 +2,8 @@ param keyVaultName string
 param tenantId string
 param ownerObjectId string
 param targetObjectIds array
+
+@secure()
 param movieDBAccessToken string
 
 var location = resourceGroup().location
