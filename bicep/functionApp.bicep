@@ -1,19 +1,9 @@
-param storageAccountName string
 param appInsightsName string
 param hostingPlanName string
 param functionAppName string
 param functionAppNameStaging string
 
 var location = resourceGroup().location
-
-resource storageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
-  name: storageAccountName
-  location: location
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-}
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appInsightsName
@@ -54,9 +44,7 @@ resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
   }
 
   dependsOn: [
-    appInsights
-    hostingPlan
-    storageAccount
+    appInsights    
   ]
 }
 
@@ -85,5 +73,4 @@ output tenantId string = functionApp.identity.tenantId
 output principalId string = functionApp.identity.principalId
 output stagingTenantId string = functionAppStagingSlot.identity.tenantId
 output stagingPrincipalId string = functionAppStagingSlot.identity.principalId
-output storageAccountConnectionString string = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
 output appInsightsKey string = appInsights.properties.InstrumentationKey
