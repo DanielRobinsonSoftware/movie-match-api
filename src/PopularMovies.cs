@@ -30,7 +30,7 @@ namespace MovieMatch
                 return new UnauthorizedResult();
             }
 
-            var response = await HttpClient.GetWithAuthHeaderAsync($"{MovieDbBaseUri}/3/movie/popular", MovieDbAccessToken);
+            var response = await HttpClient.GetWithAuthHeaderAsync($"{MovieDbBaseUri}/3/movie/popular", GetMovieDbAccessToken());
 
             response.EnsureSuccessStatusCode();
             var responseContent = await response.Content.ReadAsStringAsync();
