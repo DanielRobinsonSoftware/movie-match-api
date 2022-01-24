@@ -1,26 +1,30 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MovieMatch.Identity
 {
-    public class AzureADJwtBearerValidation
+    public class AzureADJwtBearerValidation : IAzureADJwtBearerValidation
     {
+        private ISecurityTokenValidator _tokenValidator;
         private IConfiguration _configuration;
         private ILogger _log;
-        private ConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
- 
+        private IOpenIdConnectConfigurationReader _openIdConnectConfigurationReader;
+
         private string _wellKnownEndpoint;
         private string _audience;
  
-        public AzureADJwtBearerValidation(IConfiguration configuration, ILoggerFactory loggerFactory)
+        public AzureADJwtBearerValidation(
+            ISecurityTokenValidator tokenValidator,
+            IConfiguration configuration,
+            IOpenIdConnectConfigurationReader openIdConnectConfigurationReader,
+            ILoggerFactory loggerFactory)
         {
-            _configuration = configuration;
+            _tokenValidator = Guard.NotNull(nameof(tokenValidator), tokenValidator);
+            _configuration = Guard.NotNull(nameof(configuration), configuration);
+            _openIdConnectConfigurationReader = Guard.NotNull(nameof(openIdConnectConfigurationReader), openIdConnectConfigurationReader);
             _log = loggerFactory.CreateLogger<AzureADJwtBearerValidation>();
  
             var instance = _configuration["AzureADInstance"];
@@ -45,10 +49,8 @@ namespace MovieMatch.Identity
  
             var accessToken = authorizationHeader.Substring("Bearer ".Length);
  
-            var oidcWellknownEndpoints = await GetOIDCWellknownConfiguration();
+            var oidcWellknownEndpoints = await _openIdConnectConfigurationReader.GetConfigurationAsync(_wellKnownEndpoint);
   
-            var tokenValidator = new JwtSecurityTokenHandler();
- 
             var validationParameters = new TokenValidationParameters
             {
                 RequireSignedTokens = true,
@@ -63,8 +65,8 @@ namespace MovieMatch.Identity
  
             try
             {
-                SecurityToken securityToken;                
-                tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
+                SecurityToken securityToken;
+                _tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
 
                 return true;
             }
@@ -73,14 +75,6 @@ namespace MovieMatch.Identity
                 _log.LogDebug($"Token validation failed due to {ex.ToString()}");
             }
             return false;
-        }
- 
-        private async Task<OpenIdConnectConfiguration> GetOIDCWellknownConfiguration()
-        {
-            _configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                 _wellKnownEndpoint, new OpenIdConnectConfigurationRetriever());
- 
-            return await _configurationManager.GetConfigurationAsync();
         }
     }
 }

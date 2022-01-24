@@ -10,7 +10,9 @@ namespace MovieMatch
         public override void Configure(IFunctionsHostBuilder builder)
         {
             builder.Services.AddHttpClient();
-            builder.Services.AddScoped<AzureADJwtBearerValidation>();
+            builder.Services.AddScoped<IAzureADJwtBearerValidation, AzureADJwtBearerValidation>();
+            builder.Services.AddScoped<IJwtSecurityTokenHandler, JwtSecurityTokenHandlerWrapper>();
+            builder.Services.AddScoped<IOpenIdConnectConfigurationReader, OpenIdConnectConfigurationReader>();
         }
     }
 }

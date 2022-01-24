@@ -12,7 +12,7 @@ namespace MovieMatch
 {
     public class PopularMovies : EndpointBase
     {
-        public PopularMovies(IHttpClientFactory httpClientFactory, AzureADJwtBearerValidation azureADJwtBearerValidation) 
+        public PopularMovies(IHttpClientFactory httpClientFactory, IAzureADJwtBearerValidation azureADJwtBearerValidation) 
             : base(httpClientFactory, azureADJwtBearerValidation)
         {
         }
