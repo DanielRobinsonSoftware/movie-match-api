@@ -35,6 +35,7 @@ namespace MovieMatch.Identity
  
         public async Task<bool> ValidateTokenAsync(string authorizationHeader)
         {
+            _log.LogTrace($"{nameof(AzureADJwtBearerValidation)}.{nameof(ValidateTokenAsync)} called");
             if (string.IsNullOrEmpty(authorizationHeader))
             {
                 _log.LogDebug("Token validation failed due to missing authorization header");
@@ -66,7 +67,10 @@ namespace MovieMatch.Identity
             try
             {
                 SecurityToken securityToken;
+                
+                _log.LogTrace("Validating token");
                 _tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
+                _log.LogTrace("Token validation succeeded");
 
                 return true;
             }
