@@ -10,52 +10,48 @@ namespace MovieMatch.Identity
     {
         private ISecurityTokenValidator _tokenValidator;
         private IConfiguration _configuration;
-        private ILogger _log;
+        private ILoggerFactory _loggerFactory;
         private IOpenIdConnectConfigurationReader _openIdConnectConfigurationReader;
 
-        private string _wellKnownEndpoint;
-        private string _audience;
- 
         public AzureADJwtBearerValidation(
             ISecurityTokenValidator tokenValidator,
             IConfiguration configuration,
             IOpenIdConnectConfigurationReader openIdConnectConfigurationReader,
             ILoggerFactory loggerFactory)
         {
-            _tokenValidator = Guard.NotNull(nameof(tokenValidator), tokenValidator);
-            _configuration = Guard.NotNull(nameof(configuration), configuration);
-            _openIdConnectConfigurationReader = Guard.NotNull(nameof(openIdConnectConfigurationReader), openIdConnectConfigurationReader);
-            _log = loggerFactory.CreateLogger<AzureADJwtBearerValidation>();
- 
-            var instance = _configuration["AzureADInstance"];
-            var tenantId = _configuration["AzureADTenantId"];
-            _wellKnownEndpoint = $"{instance}{tenantId}/v2.0/.well-known/openid-configuration";
-            _audience = _configuration["ApiApplicationId"];
+            _tokenValidator = tokenValidator;
+            _configuration = configuration;
+            _openIdConnectConfigurationReader = openIdConnectConfigurationReader;
+            _loggerFactory = loggerFactory;
         }
  
         public async Task<bool> ValidateTokenAsync(string authorizationHeader)
         {
-            _log.LogTrace($"{nameof(AzureADJwtBearerValidation)}.{nameof(ValidateTokenAsync)} called");
+            var wellKnownEndpoint = $"{_configuration["AzureADInstance"]}{_configuration["AzureADTenantId"]}/v2.0/.well-known/openid-configuration";
+            var audience = _configuration["ApiApplicationId"];
+
+            var log = _loggerFactory.CreateLogger<AzureADJwtBearerValidation>();
+            log.LogTrace($"{nameof(AzureADJwtBearerValidation)}.{nameof(ValidateTokenAsync)} called");
             if (string.IsNullOrEmpty(authorizationHeader))
             {
-                _log.LogDebug("Token validation failed due to missing authorization header");
+                log.LogDebug("Token validation failed due to missing authorization header");
                 return false;
             }
  
             if (!authorizationHeader.Contains("Bearer"))
             {
-                _log.LogDebug("Token validation failed due to missing Bearer token");
+                log.LogDebug("Token validation failed due to missing Bearer token");
                 return false;
             }
  
             var accessToken = authorizationHeader.Substring("Bearer ".Length);
  
-            var oidcWellknownEndpoints = await _openIdConnectConfigurationReader.GetConfigurationAsync(_wellKnownEndpoint);
+            var oidcWellknownEndpoints = await _openIdConnectConfigurationReader.GetConfigurationAsync(wellKnownEndpoint);
   
             var validationParameters = new TokenValidationParameters
             {
                 RequireSignedTokens = true,
-                ValidAudience = _audience,
+                ValidAudience = audience,
                 ValidateAudience = true,
                 ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
@@ -68,15 +64,15 @@ namespace MovieMatch.Identity
             {
                 SecurityToken securityToken;
                 
-                _log.LogTrace("Validating token");
+                log.LogTrace("Validating token");
                 _tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
-                _log.LogTrace("Token validation succeeded");
+                log.LogTrace("Token validation succeeded");
 
                 return true;
             }
             catch (Exception ex)
             {
-                _log.LogDebug($"Token validation failed due to {ex.ToString()}");
+                log.LogDebug($"Token validation failed due to {ex.ToString()}");
             }
             return false;
         }

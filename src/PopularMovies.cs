@@ -22,7 +22,7 @@ namespace MovieMatch
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "v1/movies/popular")] HttpRequest req,
             ILogger log)
         {
-            log.LogTrace("HttpTrigger GetPopularMovies activated");
+            log.LogInformation("HttpTrigger GetPopularMovies activated");
 
             try
             {
@@ -37,7 +37,8 @@ namespace MovieMatch
                 var movieDbAccessToken = GetMovieDbAccessToken();
                 log.LogTrace($"Retrieved {nameof(movieDbAccessToken)}, with length of {movieDbAccessToken?.Length ?? 0}");
 
-                var response = await HttpClient.GetWithAuthHeaderAsync($"{MovieDbBaseUri}/3/movie/popular", movieDbAccessToken);
+                var httpClient = HttpClientFactory.CreateClient();
+                var response = await httpClient.GetWithAuthHeaderAsync($"{MovieDbBaseUri}/3/movie/popular", movieDbAccessToken);
                 log.LogTrace($"Received {response?.StatusCode.ToString() ?? "null"} response from MovieDB");
                 
                 response.EnsureSuccessStatusCode();

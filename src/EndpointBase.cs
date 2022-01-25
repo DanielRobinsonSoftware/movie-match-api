@@ -8,13 +8,13 @@ namespace MovieMatch
 {
     public class EndpointBase
     {   
-        protected HttpClient HttpClient { get; private set; }
+        protected IHttpClientFactory HttpClientFactory { get; private set; }
         protected IAzureADJwtBearerValidation AzureADJwtBearerValidation { get; private set; }
         protected const string MovieDbBaseUri = "https://api.themoviedb.org";
 
         protected EndpointBase(IHttpClientFactory httpClientFactory, IAzureADJwtBearerValidation azureADJwtBearerValidation)
         {
-            HttpClient = httpClientFactory.CreateClient();
+            HttpClientFactory = httpClientFactory;
             AzureADJwtBearerValidation = azureADJwtBearerValidation;
         }
         
