@@ -38,11 +38,23 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_SDK_VERSION }}
 
+      - name: Setup DotNet 6.0.x Environment
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 6.0.x
+
       - name: Build
         shell: bash
         run: |
           pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
           dotnet build --configuration Release --output ./output
+          popd
+
+      - name: Unit test
+        shell: bash
+        run: |
+          pushd './${{ env.AZURE_FUNCTIONAPP_TEST_PATH }}/xunit'
+          dotnet test
           popd
 
       - name: Deploy API to staging
