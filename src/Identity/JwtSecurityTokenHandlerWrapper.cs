@@ -8,8 +8,5 @@ namespace MovieMatch.Identity
     /// </summary>
     public class JwtSecurityTokenHandlerWrapper : JwtSecurityTokenHandler, IJwtSecurityTokenHandler
     {
-        public JwtSecurityTokenHandlerWrapper() : base()
-        {
-        }
     }
 }

@@ -8,13 +8,13 @@ namespace MovieMatch.Identity
 {
     public class AzureADJwtBearerValidation : IAzureADJwtBearerValidation
     {
-        private ISecurityTokenValidator _tokenValidator;
+        private IJwtSecurityTokenHandler _tokenValidator;
         private IConfiguration _configuration;
         private ILoggerFactory _loggerFactory;
         private IOpenIdConnectConfigurationReader _openIdConnectConfigurationReader;
 
         public AzureADJwtBearerValidation(
-            ISecurityTokenValidator tokenValidator,
+            IJwtSecurityTokenHandler tokenValidator,
             IConfiguration configuration,
             IOpenIdConnectConfigurationReader openIdConnectConfigurationReader,
             ILoggerFactory loggerFactory)
