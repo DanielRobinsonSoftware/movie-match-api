@@ -56,7 +56,7 @@ namespace e2e
             var response = _apiClient.Get(request);
 
             // Assert
-            _output.WriteLine($"Reponse status is: {response.StatusCode} {response.StatusDescription}");
+            _output.WriteLine($"Response status is: {response.StatusCode} {response.StatusDescription}");
             response.IsSuccessful.Should().BeTrue();            
         }
 
