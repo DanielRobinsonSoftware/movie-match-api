@@ -1,58 +1,57 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Protocols;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;
 
 namespace MovieMatch.Identity
 {
-    public class AzureADJwtBearerValidation
+    public class AzureADJwtBearerValidation : IAzureADJwtBearerValidation
     {
+        private IJwtSecurityTokenHandler _tokenValidator;
         private IConfiguration _configuration;
-        private ILogger _log;
-        private ConfigurationManager<OpenIdConnectConfiguration> _configurationManager;
- 
-        private string _wellKnownEndpoint;
-        private string _audience;
- 
-        public AzureADJwtBearerValidation(IConfiguration configuration, ILoggerFactory loggerFactory)
+        private ILoggerFactory _loggerFactory;
+        private IOpenIdConnectConfigurationReader _openIdConnectConfigurationReader;
+
+        public AzureADJwtBearerValidation(
+            IJwtSecurityTokenHandler tokenValidator,
+            IConfiguration configuration,
+            IOpenIdConnectConfigurationReader openIdConnectConfigurationReader,
+            ILoggerFactory loggerFactory)
         {
+            _tokenValidator = tokenValidator;
             _configuration = configuration;
-            _log = loggerFactory.CreateLogger<AzureADJwtBearerValidation>();
- 
-            var instance = _configuration["AzureADInstance"];
-            var tenantId = _configuration["AzureADTenantId"];
-            _wellKnownEndpoint = $"{instance}{tenantId}/v2.0/.well-known/openid-configuration";
-            _audience = _configuration["ApiApplicationId"];
+            _openIdConnectConfigurationReader = openIdConnectConfigurationReader;
+            _loggerFactory = loggerFactory;
         }
  
         public async Task<bool> ValidateTokenAsync(string authorizationHeader)
         {
+            var wellKnownEndpoint = $"{_configuration["AzureADInstance"]}{_configuration["AzureADTenantId"]}/v2.0/.well-known/openid-configuration";
+            var audience = _configuration["ApiApplicationId"];
+
+            var log = _loggerFactory.CreateLogger<AzureADJwtBearerValidation>();
+            log.LogTrace($"{nameof(AzureADJwtBearerValidation)}.{nameof(ValidateTokenAsync)} called");
             if (string.IsNullOrEmpty(authorizationHeader))
             {
-                _log.LogDebug("Token validation failed due to missing authorization header");
+                log.LogDebug("Token validation failed due to missing authorization header");
                 return false;
             }
  
             if (!authorizationHeader.Contains("Bearer"))
             {
-                _log.LogDebug("Token validation failed due to missing Bearer token");
+                log.LogDebug("Token validation failed due to missing Bearer token");
                 return false;
             }
  
             var accessToken = authorizationHeader.Substring("Bearer ".Length);
  
-            var oidcWellknownEndpoints = await GetOIDCWellknownConfiguration();
+            var oidcWellknownEndpoints = await _openIdConnectConfigurationReader.GetConfigurationAsync(wellKnownEndpoint);
   
-            var tokenValidator = new JwtSecurityTokenHandler();
- 
             var validationParameters = new TokenValidationParameters
             {
                 RequireSignedTokens = true,
-                ValidAudience = _audience,
+                ValidAudience = audience,
                 ValidateAudience = true,
                 ValidateIssuer = true,
                 ValidateIssuerSigningKey = true,
@@ -63,24 +62,19 @@ namespace MovieMatch.Identity
  
             try
             {
-                SecurityToken securityToken;                
-                tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
+                SecurityToken securityToken;
+                
+                log.LogTrace("Validating token");
+                _tokenValidator.ValidateToken(accessToken, validationParameters, out securityToken);
+                log.LogTrace("Token validation succeeded");
 
                 return true;
             }
             catch (Exception ex)
             {
-                _log.LogDebug($"Token validation failed due to {ex.ToString()}");
+                log.LogDebug($"Token validation failed due to {ex.ToString()}");
             }
             return false;
-        }
- 
-        private async Task<OpenIdConnectConfiguration> GetOIDCWellknownConfiguration()
-        {
-            _configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                 _wellKnownEndpoint, new OpenIdConnectConfigurationRetriever());
- 
-            return await _configurationManager.GetConfigurationAsync();
         }
     }
 }

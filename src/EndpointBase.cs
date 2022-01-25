@@ -8,19 +8,17 @@ namespace MovieMatch
 {
     public class EndpointBase
     {   
-        protected readonly HttpClient HttpClient;
-        protected readonly string MovieDbAccessToken;
+        protected IHttpClientFactory HttpClientFactory { get; private set; }
+        protected IAzureADJwtBearerValidation AzureADJwtBearerValidation { get; private set; }
         protected const string MovieDbBaseUri = "https://api.themoviedb.org";
-        protected readonly AzureADJwtBearerValidation AzureADJwtBearerValidation;
 
-        protected EndpointBase(IHttpClientFactory httpClientFactory, AzureADJwtBearerValidation azureADJwtBearerValidation)
+        protected EndpointBase(IHttpClientFactory httpClientFactory, IAzureADJwtBearerValidation azureADJwtBearerValidation)
         {
-            HttpClient = httpClientFactory.CreateClient();
-            MovieDbAccessToken = GetMovieDbAccessToken();
+            HttpClientFactory = httpClientFactory;
             AzureADJwtBearerValidation = azureADJwtBearerValidation;
         }
         
-        private string GetMovieDbAccessToken()
+        protected string GetMovieDbAccessToken()
         {
             var keyVaultUri = Guard.NotNull("KeyVaultUri", Environment.GetEnvironmentVariable("KeyVaultUri"));
 
