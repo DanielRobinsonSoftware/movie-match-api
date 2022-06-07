@@ -1,4 +1,5 @@
 param appName string
+param location string = resourceGroup().location
 
 @secure()
 param userObjectId string
@@ -22,17 +23,19 @@ module storageAccountModule 'storageAccount.bicep' = {
   scope: resourceGroup()
   params: {
     storageAccountName: shortGloballyUniqueName
+    location: location
   }
 }
 
 module functionAppModule 'functionApp.bicep' = {
   name: 'functionAppModule'
   scope: resourceGroup()
-  params: {    
+  params: {
     appInsightsName: globallyUniqueName
     hostingPlanName: globallyUniqueName
     functionAppName: appName
     functionAppNameStaging: functionAppNameStaging
+    location: location
   }
   dependsOn:[
     storageAccountModule
@@ -50,6 +53,7 @@ module keyVaultModule 'keyVault.bicep' = {
       functionAppModule.outputs.stagingPrincipalId
     ]
     movieDBAccessToken: movieDBAccessToken
+    location: location
   }
   dependsOn:[
     functionAppModule

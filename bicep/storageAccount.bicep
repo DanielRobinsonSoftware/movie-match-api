@@ -1,6 +1,5 @@
 param storageAccountName string
-
-var location = resourceGroup().location
+param location string
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2021-02-01' = {
   name: storageAccountName

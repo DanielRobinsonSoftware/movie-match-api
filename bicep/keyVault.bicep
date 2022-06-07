@@ -5,8 +5,7 @@ param targetObjectIds array
 
 @secure()
 param movieDBAccessToken string
-
-var location = resourceGroup().location
+param location string
 
 var accessPolicyOwner = {
   tenantId: tenantId
