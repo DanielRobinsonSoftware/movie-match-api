@@ -2,8 +2,7 @@ param appInsightsName string
 param hostingPlanName string
 param functionAppName string
 param functionAppNameStaging string
-
-var location = resourceGroup().location
+param location string
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
   name: appInsightsName
