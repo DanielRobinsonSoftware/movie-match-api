@@ -16,7 +16,7 @@ An API to support upcoming Movie Match applications
 - CI/CD with GitHub actions
 
 ## 📝 Project
-- [Impact Map](https://github.com/DanielRobinsonSoftware?tab=projects)
+- [Impact Map](https://github.com/DanielRobinsonSoftware?tab=projects&type=classic)
 - [Kanban board](https://github.com/users/DanielRobinsonSoftware/projects/1)
 
 ## 🤷 Motivation
