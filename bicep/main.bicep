@@ -1,5 +1,7 @@
 param appName string
 param location string = resourceGroup().location
+param corsProduction string
+param corsStaging string
 
 @secure()
 param userObjectId string
@@ -35,6 +37,8 @@ module functionAppModule 'functionApp.bicep' = {
     hostingPlanName: globallyUniqueName
     functionAppName: appName
     functionAppNameStaging: functionAppNameStaging
+    corsProduction: corsProduction
+    corsStaging: corsStaging
     location: location
   }
   dependsOn:[
