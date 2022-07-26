@@ -2,6 +2,8 @@ param appInsightsName string
 param hostingPlanName string
 param functionAppName string
 param functionAppNameStaging string
+param corsProduction string
+param corsStaging string
 param location string
 
 resource appInsights 'Microsoft.Insights/components@2020-02-02' = {
@@ -38,12 +40,16 @@ resource functionApp 'Microsoft.Web/sites@2021-01-15' = {
     serverFarmId: hostingPlan.id
     clientAffinityEnabled: true
     siteConfig: {
-
+      cors: {
+        allowedOrigins: [
+          corsProduction
+        ]
+      }
     }
   }
 
   dependsOn: [
-    appInsights    
+    appInsights
   ]
 }
 
@@ -59,7 +65,11 @@ resource functionAppStagingSlot 'Microsoft.Web/sites/slots@2021-02-01' = {
     serverFarmId: hostingPlan.id
     clientAffinityEnabled: true
     siteConfig: {
-
+      cors: {
+        allowedOrigins: [
+          corsStaging
+        ]
+      }
     }
   }
 
